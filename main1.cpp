@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
-//#include<biblio_fonctions.h>
-//#include<bibli_perso.h>
+#include"bibli_fonctions.h" 
+// #include"bibli_perso.h"
 
 using namespace std;
 
@@ -29,7 +29,7 @@ RQ: Il n'y a pas besoin d'implémenter les fonctions de base (ici les fonctions 
       D[i-1][i] = double(1)/(z[i] - z[i-1]);
     }
   D[0][1] = double(1)/(z[1] - z[0]);
-  D[N-2][N-1] = double(1)/(z[N-1][N-2]);
+  D[N-2][N-1] = double(1)/(z[N-1] -z[N-2]);
   // RQ: Je ne connais pas D[0][0] et D[N-1][N-1] mais je ne m'en servirai pas
   // dans mon système matriciel!
 }
@@ -82,7 +82,7 @@ void init(double *grille, double *E)
 void alloc_(double **m, int n)
 {
   int i;
-  m = (double *)malloc(n*sizeof(double));
+  m = (double **)malloc(n*sizeof(double));
   for(i=0; i<n; i++)
     {
       m[i] = (double *)malloc(n*sizeof(double));

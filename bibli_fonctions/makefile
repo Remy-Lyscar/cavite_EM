@@ -1,0 +1,55 @@
+CC=-c -Wall --pedantic -I/usr/include/python3.10
+bibli_fonctions.ar : alea.o alloc_divers.o combi.o binomiale.o choleski.o choleski_complex.o choleski_complex_vector.o eq_3d.o integ.o integ_preci.o rk4.o tri_d.o alg_lin.o eq_2d.o grad.o gnup.o gnup_ps.o gnup_pdf.o rk4_old.o calculs_vect_3d.o cercle.o segment.o make_plot_py.o histo_dist_py.o histo_simple_py.o multi_courbes_py.o
+	ar -r bibli_fonctions.ar alea.o alloc_divers.o combi.o binomiale.o choleski.o choleski_complex.o choleski_complex_vector.o eq_3d.o integ.o integ_preci.o rk4.o tri_d.o alg_lin.o eq_2d.o grad.o gnup.o gnup_ps.o gnup_pdf.o rk4_old.o calculs_vect_3d.o cercle.o segment.o make_plot_py.o histo_dist_py.o histo_simple_py.o multi_courbes_py.o
+alea.o : alea.cpp
+	g++ $(CC) alea.cpp
+alloc_divers.o : alloc_divers.cpp
+	g++ $(CC) alloc_divers.cpp
+combi.o : combi.cpp
+	g++ $(CC) combi.cpp
+binomiale.o : binomiale.cpp
+	g++ $(CC) binomiale.cpp
+choleski.o : choleski.cpp
+	g++ $(CC) choleski.cpp
+eq_3d.o : eq_3d.cpp
+	g++ $(CC) eq_3d.cpp
+integ.o : integ.cpp
+	g++ $(CC) integ.cpp
+integ_preci.o : integ_preci.cpp
+	g++ $(CC) integ_preci.cpp
+rk4.o : rk4.cpp
+	g++ $(CC) rk4.cpp
+rk4_old.o : rk4_old.cpp
+	g++ $(CC) rk4_old.cpp
+tri_d.o : tri_d.cpp
+	g++ $(CC) tri_d.cpp
+alg_lin.o : alg_lin.cpp
+	g++ $(CC) alg_lin.cpp
+eq_2d.o : eq_2d.cpp
+	g++ $(CC) eq_2d.cpp
+choleski_complex.o : choleski_complex.cpp
+	g++ $(CC) choleski_complex.cpp
+choleski_complex_vector.o : choleski_complex_vector.cpp
+	g++ $(CC) choleski_complex_vector.cpp
+grad.o : grad.cpp
+	g++ $(CC) grad.cpp
+gnup.o : gnup.cpp
+	g++ $(CC) gnup.cpp
+gnup_ps.o : gnup_ps.cpp
+	g++ $(CC) gnup_ps.cpp
+gnup_pdf.o : gnup_pdf.cpp
+	g++ $(CC) gnup_pdf.cpp
+cercle.o : cercle.cpp
+	g++ $(CC) cercle.cpp
+segment.o : segment.cpp
+	g++ $(CC) segment.cpp
+calculs_vect_3d.o : calculs_vect_3d.cpp
+	g++ $(CC) calculs_vect_3d.cpp
+make_plot_py.o : make_plot_py.cpp
+	g++ $(CC) make_plot_py.cpp
+histo_dist_py.o : histo_dist_py.cpp
+	g++ $(CC) histo_dist_py.cpp
+histo_simple_py.o : histo_simple_py.cpp
+	g++ $(CC) histo_simple_py.cpp
+multi_courbes_py.o : multi_courbes_py.cpp
+	g++ $(CC) multi_courbes_py.cpp

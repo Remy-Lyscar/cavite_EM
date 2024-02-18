@@ -1,0 +1,12 @@
+Compiler les fichiers de fonctions par : 
+  CC -c x.c  (Criens)
+ou :
+  gcc -c x.c (Linux)
+Constituer le .ar :
+  ar -r bibli_fonctions.ar x.o y.o z.o ...   (ordre contraire a celui du man ar !) 
+et compiler par :
+  CC -lm -Irepertoire_contenant_fichier_en_tete mon_prog.c bibli_fonctions.ar (Criens)
+ou :
+  gcc lm -Irepertoire_contenant_fichier_en_tete mon_prog.c bibli_fonctions.ar (Linux)
+avec, dans mon_prog.c :
+  #include<fonctions_magistere.h>

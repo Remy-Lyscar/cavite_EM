@@ -1,0 +1,24 @@
+1) Pour completer la bibliotheque bibli_fonctions.ar il faut mettre a jour le fichier makefile qui se presente sous la forme 
+
+  bibli_fonctions.ar : alea.o ...
+	  ar -r bibli_fonctions.ar alea.o ...
+  alea.o : alea.c
+	  g++ -c alea.c
+  ...
+
+(donc ajouter les noms des nouvelles fonctions en cinq endroits)
+Attention : bien mettre un Tab devant le ar et les g++.
+
+2) Ajouter les prototypes dans bibli_fonctions.h
+
+3) Pour mettre a jour la bibliotheque taper dans ce repertoire /home/naulin/antares/c/fonctions :
+  make
+Si on veut tout recompiler et pas seulement ce qui est nouveau (passage i386 -> amd64 par exemple) : make -B
+
+4) Pour utiliser la bibliotheque compiler par (comme sans makefile) :
+  g++ -lm -Irepertoire_contenant_fichier_en_tete mon_prog.c bibli_fonctions.ar (Linux)
+  (ce qui est fait automatiquement par ccc mon_prog.c)
+avec, dans mon_prog.c :
+  #include<bibli_fonctions.h>
+
+Remarque : si on veut supprimer des fonctions il est prudent de supprimer bibli_fonctions.ar et de tout recompiler en faisant make -B

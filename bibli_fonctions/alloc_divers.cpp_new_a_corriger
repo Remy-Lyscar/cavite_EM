@@ -1,0 +1,273 @@
+#include "bibli_fonctions.h"
+/*************************************************************************/
+int *I_1(int ni)
+{
+  int i;
+  int *x=(int *)malloc(ni*sizeof(int));
+  if(x==NULL){cout << "I_1 : mémoire insuffisante" << endl; exit -1;}
+  for(i=0;i<ni;i++) x[i]=0;
+  return x;
+}
+/*************************************************************************/
+void f_I_1(int *x,int ni)
+{
+  free(x);
+}
+/*************************************************************************/
+int **I_2(int ni,int nj)
+{
+  int i,j;
+  int **x=(int **)malloc(ni*sizeof(int *));
+  if(x==NULL){cout << "I_2 : mémoire insuffisante" << endl; exit -1;}
+  for(i=0;i<ni;i++)
+    {
+      x[i]=(int *)malloc(nj*sizeof(int));
+      if(x[i]==NULL){cout << "I_2 x[" << i << "] : mémoire insuffisante"; exit -1;
+      }
+    }
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) x[i][j]=0;
+  return x;
+}
+/*************************************************************************/
+void f_I_2(int **x,int ni,int nj)
+{
+  int i;  
+  for(i=0;i<ni;i++) free(x[i]);
+  free(x);
+  return;
+}
+/*************************************************************************/
+int ***I_3(int ni,int nj,int nk)
+{
+  int i,j,k;
+  int ***x=(int ***)malloc(ni*sizeof(int **));
+  if(x==NULL){cout << "I_3 : mémoire insuffisante" << endl; exit -1;}
+  for(i=0;i<ni;i++)
+    {
+      x[i]=(int **)malloc(nj*sizeof(int *));
+      if(x[i]==NULL) {cout << "I_3 x[" << i << "] : mémoire insuffisante" << endl; exit -1;}
+      for (j=0;j<nj;j++)
+	{
+	  x[i][j]=(int *)malloc(nk*sizeof(int));
+	  if(x[i][j]==NULL) {cout << "I_3 x[" << i << "][" << j << "] : mémoire insuffisante" << endl; exit -1 ;}
+	}
+    }
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) for(k=0;k<nk;k++) x[i][j][k]=0;
+  return x;
+}
+/*************************************************************************/
+void f_I_3(int ***x,int ni,int nj,int nk)
+{
+  int i,j;  
+  for(i=0;i<ni;i++) {for(j=0;j<nj;j++) {free(x[i][j]);} free(x[i]);}
+  free(x);
+}
+/*************************************************************************/
+double *D_1(int ni)
+{
+  int i;
+  double *x=(double *)malloc(ni*sizeof(double));
+  if(x==NULL){cout << "D_1 : mémoire insuffisante" << endl; exit -1;}
+  for(i=0;i<ni;i++) x[i]=0.;
+  return x;
+}
+/*************************************************************************/
+void f_D_1(double *x,int ni)
+{
+  free(x);
+}
+/*************************************************************************/
+double **D_2(int ni,int nj)
+{
+  int i,j;
+  double **x=(double **)malloc(ni*sizeof(double *));
+  if(x==NULL){cout << "D_2 : mémoire insuffisante" << endl; exit -1;}
+  for(i=0;i<ni;i++)
+    {
+      x[i]=(double *)malloc(nj*sizeof(double));
+      if(x[i]==NULL){cout << "D_2 x[" << i << "] : mémoire insuffisante"; exit -1;
+      }
+    }
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) x[i][j]=0.;
+  return x;
+}
+/*************************************************************************/
+void f_D_2(double **x,int ni,int nj)
+{
+  int i;  
+  for(i=0;i<ni;i++) free(x[i]);
+  free(x);
+  return;
+}
+/*************************************************************************/
+double ***D_3(int ni,int nj,int nk)
+{
+  int i,j,k;
+  double ***x=(double ***)malloc(ni*sizeof(double **));
+  if(x==NULL){cout << "D_3 : mémoire insuffisante" << endl; exit -1;}
+  for(i=0;i<ni;i++)
+    {
+      x[i]=(double **)malloc(nj*sizeof(double *));
+      if(x[i]==NULL) {cout << "D_3 x[" << i << "] : mémoire insuffisante" << endl; exit -1;}
+      for (j=0;j<nj;j++)
+	{
+	  x[i][j]=(double *)malloc(nk*sizeof(double));
+	  if(x[i][j]==NULL) {cout << "D_3 x[" << i << "][" << j << "] : mémoire insuffisante" << endl; exit -1 ;}
+	}
+    }
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) for(k=0;k<nk;k++) x[i][j][k]=0.;
+  return x;
+}
+/*************************************************************************/
+void f_D_3(double ***x,int ni,int nj,int nk)
+{
+  int i,j;  
+  for(i=0;i<ni;i++) {for(j=0;j<nj;j++) {free(x[i][j]);} free(x[i]);}
+  free(x);
+}
+/*************************************************************************/
+char *C_1(int ni)
+{
+  int i;
+  char *x=(char *)malloc(ni*sizeof(char));
+  if(x==NULL){cout << "C_1 : mémoire insuffisante" << endl; exit -1;}
+  for(i=0;i<ni;i++) x[i]=" ";
+  return x;
+}
+/*************************************************************************/
+void f_C_1(char *x,int ni)
+{
+  free(x);
+}
+/*************************************************************************/
+char **C_2(int ni,int nj)
+{
+  int i,j;
+  char **x=(char **)malloc(ni*sizeof(char *));
+  if(x==NULL){cout << "C_2 : mémoire insuffisante" << endl; exit -1;}
+  for(i=0;i<ni;i++)
+    {
+      x[i]=(char *)malloc(nj*sizeof(char));
+      if(x[i]==NULL){cout << "C_2 x[" << i << "] : mémoire insuffisante"; exit -1;
+      }
+    }
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) x[i][j]=" ";
+  return x;
+}
+/*************************************************************************/
+void f_C_2(char **x,int ni,int nj)
+{
+  int i;  
+  for(i=0;i<ni;i++) free(x[i]);
+  free(x);
+  return;
+}
+/*************************************************************************/
+char ***C_3(int ni,int nj,int nk)
+{
+  int i,j,k;
+  char ***x=(char ***)malloc(ni*sizeof(char **));
+  if(x==NULL){cout << "C_3 : mémoire insuffisante" << endl; exit -1;}
+  for(i=0;i<ni;i++)
+    {
+      x[i]=(char **)malloc(nj*sizeof(char *));
+      if(x[i]==NULL) {cout << "C_3 x[" << i << "] : mémoire insuffisante" << endl; exit -1;}
+      for (j=0;j<nj;j++)
+	{
+	  x[i][j]=(char *)malloc(nk*sizeof(char));
+	  if(x[i][j]==NULL) {cout << "C_3 x[" << i << "][" << j << "] : mémoire insuffisante" << endl; exit -1 ;}
+	}
+    }
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) for(k=0;k<nk;k++) x[i][j][k]=" ";
+  return x;
+}
+/*************************************************************************/
+void f_C_3(char ***x,int ni,int nj,int nk)
+{
+  int i,j;  
+  for(i=0;i<ni;i++) {for(j=0;j<nj;j++) {free(x[i][j]);} free(x[i]);}
+  free(x);
+}
+//*************************************************************************/
+void ini_I_1(int *x,int ni,...)
+{
+  int i;
+  va_list ap;
+  va_start(ap,ni);
+  for(i=0;i<ni;i++) x[i]=va_arg(ap,int);
+  va_end(ap);
+}
+//*************************************************************************/
+void ini_I_2(int **x,int ni,int nj,...)
+{
+  int i,j;
+  va_list ap;
+  va_start(ap,nj);
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) x[i][j]=va_arg(ap,int);
+  va_end(ap);
+}
+//*************************************************************************/
+void ini_I_3(int ***x,int ni,int nj,int nk,...)
+{
+  int i,j,k;
+  va_list ap;
+  va_start(ap,nk);
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) for(k=0;k<nk;k++) x[i][j][k]=va_arg(ap,int);
+  va_end(ap);
+}
+//*************************************************************************/
+void ini_D_1(double *x,int ni,...)
+{
+  int i;
+  va_list ap;
+  va_start(ap,ni);
+  for(i=0;i<ni;i++) x[i]=va_arg(ap,double);
+  va_end(ap);
+}
+//*************************************************************************/
+void ini_D_2(double **x,int ni,int nj,...)
+{
+  int i,j;
+  va_list ap;
+  va_start(ap,nj);
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) x[i][j]=va_arg(ap,double);
+  va_end(ap);
+}
+//*************************************************************************/
+void ini_D_3(double ***x,int ni,int nj,int nk,...)
+{
+  int i,j,k;
+  va_list ap;
+  va_start(ap,nk);
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) for(k=0;k<nk;k++) x[i][j][k]=va_arg(ap,double);
+  va_end(ap);
+}
+//*************************************************************************/
+//*************************************************************************/
+void ini_C_1(char *x,int ni,...)
+{
+  int i;
+  va_list ap;
+  va_start(ap,ni);
+  for(i=0;i<ni;i++) x[i]=va_arg(ap,char);
+  va_end(ap);
+}
+//*************************************************************************/
+void ini_C_2(char **x,int ni,int nj,...)
+{
+  int i,j;
+  va_list ap;
+  va_start(ap,nj);
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) x[i][j]=va_arg(ap,char);
+  va_end(ap);
+}
+//*************************************************************************/
+void ini_C_3(char ***x,int ni,int nj,int nk,...)
+{
+  int i,j,k;
+  va_list ap;
+  va_start(ap,nk);
+  for(i=0;i<ni;i++) for(j=0;j<nj;j++) for(k=0;k<nk;k++) x[i][j][k]=va_arg(ap,char);
+  va_end(ap);
+}
+//*************************************************************************/

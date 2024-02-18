@@ -1,0 +1,86 @@
+#ifndef FONCTIONS_MAGISTERE_H
+#define  FONCTIONS_MAGISTERE_H
+
+#include</usr/include/python3.8/Python.h>
+#include<stdlib.h>
+#include<stdio.h>
+#include<math.h>
+#include<stdarg.h>
+#include<cmath>
+#include<complex>
+#include<vector>
+#include<string>
+#include<iostream>
+#include<fstream>
+#include<iomanip>
+#include<sstream>
+using namespace std;
+
+void germe(int);
+double alea();
+int choleski(double *,double *,double *,double *,double *,int);
+int choleski_complex(complex<double> *,complex<double> *,complex<double> *,complex<double> *,complex<double> *,int);
+int choleski_complex_vector(vector<complex<double> >,vector<complex<double> >,vector<complex<double> >,vector<complex<double> > &,vector<complex<double> >,int);
+double *D_1(int);
+void f_D_1(double *,int);
+void ini_D_1(double *,int,...);
+int *I_1(int);
+void f_I_1(int *,int);
+void ini_I_1(int *,int,...);
+char *C_1(int);
+void f_C_1(char *,int);
+void ini_C_1(char *,int,...);
+double **D_2(int,int);
+void f_D_2(double **,int,int);
+void ini_D_2(double **,int,int,...);
+int **I_2(int,int);
+void f_I_2(int **,int,int);
+void ini_I_2(int **,int,int,...);
+char **C_2(int,int);
+void f_C_2(char **,int,int);
+void ini_C_2(char **,int,int,...);
+double ***D_3(int,int,int);
+void f_D_3(double ***,int,int,int);
+void ini_D_3(double ***,int,int,int,...);
+int ***I_3(int,int,int);
+void f_I_3(int ***,int,int,int);
+void ini_I_3(int ***,int,int,int,...);
+char ***C_3(int,int,int);
+void f_C_3(char ***,int,int,int);
+void ini_C_3(char ***,int,int,int,...);
+void rk4(void(*)(double *,double,double *,int),double *,double,double,int);
+void rk4_old(void(*)(double *,double,double *,int),double *,double,double,int);
+double binomiale(double,int,int);
+double combi(int,int);
+void tri_d(double *,int);
+int eq_3d(double,double,double,double,double *);
+double integ(double,double,double(*)(double),int);
+double integ_preci(double,double,double(*)(double),int,double);
+void zero_v(double *,int);
+void zero(double **,int,int);
+void mat_imp(double **,int,int);
+void mat_prod(double **,double **,double **,int,int,int);
+void g_j(double **,int,double **,int);
+void egal(double *,double *,int);
+void pmc(double **,double *,double *,int,int);
+void mat_inv(double **,double **,int);
+int grad(double **,int,int,double,double,double,double *,double *);
+void gnup(string);
+void gnup_ps(string);
+void gnup_pdf(string);
+void cercle(double,double,double,double,double,fstream &);
+void segment(double,double,double,double,fstream &);
+double p_s(double *,double *);
+void p_v(double *,double *,double*);
+int p_v_n(double *,double *,double*);
+int tet_phi_vect(double *,double *,double *);
+void s_v(double *,double,double *);
+void c_l(double *,double,double *,double,double *);
+void d_v(double *,double *,double *);
+void make_plot_py(ostringstream &);
+void histo_dist_py(double,double,int,double *,double(*)(double),int);
+void histo_simple_py(double,double,int,double *);
+void multi_courbes_py(string,int);
+#endif
+
+
