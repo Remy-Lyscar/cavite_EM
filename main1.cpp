@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
-#include"bibli_fonctions.h" 
+// #include"bibli_fonctions.h" // RQ: j'ai commenté la ligne #include <Python.h>, il faut la décommenter chaque fois que je veux l'utiliser
 // #include"bibli_perso.h"
 
 using namespace std;
@@ -20,37 +20,32 @@ void laplacien_mat(double **D, double *z)
 /* Le calcul des élements de matrice de l'opérateur laplacien en 1D peut s'effectuer à la main
 RQ: Il n'y a pas besoin d'implémenter les fonctions de base (ici les fonctions tentes) tant que les 
 éléments de matrice peuvent se calculer à la main */
+// On ne retourne que la sous-matrice de dimension N-2 qui interviendra dans le système matriciel, sans se 
+// préoccuper des éléments de matrice au niveau des bords 
 {
   int i;
-  for(i=1; i<N-1;i++)
+  for(i=0; i<N-3;i++)
     {
-      D[i][i] = - (double(1)/(z[i+1] - z[i]) + double(1)/(z[i] - z[i-1]));
-      D[i][i+1] = double(1)/(z[i+1] - z[i]);
-      D[i-1][i] = double(1)/(z[i] - z[i-1]);
+      D[i][i] = - (double(1)/(z[(i+1)+1] - z[i+1]) + double(1)/(z[i+1] - z[(i+1)-1])); // Décalage de 1 dans les indices
+      D[i][i+1] = double(1)/(z[(i+1)+1] - z[i+1]);
+      D[i+1][i] = D[i][i+1];
     }
-  D[0][1] = double(1)/(z[1] - z[0]);
-  D[N-2][N-1] = double(1)/(z[N-1] -z[N-2]);
-  // RQ: Je ne connais pas D[0][0] et D[N-1][N-1] mais je ne m'en servirai pas
-  // dans mon système matriciel!
+    D[N-3][N-3] = - (double(1)/(z[N-1] - z[N-2]) + double(1)/(z[N-2] - z[N-3]));
 }
 
 
 
-void masse_mat(double **M, double *grille)
+void masse_mat(double **M, double *z)
 /* Le calcul des éléments de le matrice de masse peut s'effectuer à la main */
 {
-  M[0][0] = (grille[1] - grille[0])/3;
-  M[N-1][N-1] = (grille[N-1] - grille[N-2])/3;
   int i;
-  for(i=1; i<N-1; i++)
+  for(i=0; i<N-3; i++)
     {
-      M[i][i-1] = (grille[i] - grille[i-1])/6;
-      M[i][i] = (grille[i+1] - grille[i-1])/3;
-      M[i][i+1] = (grille[i+1] - grille[i])/6;
-    }
-  M[0][1] = (grille[1] - grille[0])/6;
-  M[N-1][N-2] = (grille[N-1] - grille[N-2])/6;
-	  
+      M[i][i] = (z[(i+1) + 1] - z[(i+1)-1])/3;
+      M[i][i+1] = (z[(i+1)+1] - z[i+1])/6;
+      M[i+1][i] = (z[(i+1)+1] - z[i+1])/6;
+    }	  
+    M[N-3][N-3] = (z[N-1] - z[N-3])/3;
 }
 
 
@@ -104,7 +99,6 @@ void free_(double **m, int n)
 
 
 
-
 int main()
 {
  
@@ -118,10 +112,66 @@ int main()
   alloc_(D,N); 
 
 
+  // initialisation des tableaux E et grille, en prenant en compte les conditions de Dirichlet aux bords 
+  init(grille, E);
+
+
+  //Calcul des matrices des opérateurs Masse M et Laplacien D
+  laplacien_mat(D, grille);
+  masse_mat(M, grille); 
+
+  // Affichage dans des fichiers pour vérification
+  fstream check; 
+  check.open("check.txt", ios::out); 
+
+  fstream f; 
+  f.open("hello.txt", ios::out); 
+  f << "Hello world" << endl; 
+
+  f.close();
+
+  int k; 
+  for(k=0; k<N; k++)
+  {
+    check << grille[k] << " "; 
+  }
+  check << endl; 
+
+    for(k=0; k<N; k++)
+  {
+    check << E[k] << " "; 
+  }
+  check << endl; 
+
+  int i,j; 
+  for (i=0; j<N-2; j++)
+  {
+    for(j=0; j<N-2; j++)
+    {
+      check << M[i][j] << " "; 
+    }
+    check << endl;
+  }
+  check << endl;
+
+   for (i=0; j<N-2; j++)
+  {
+    for(j=0; j<N-2; j++)
+    {
+      check << D[i][j] << " "; 
+    }
+    check << endl;
+  }
+  check << endl;
+
+  check.close(); 
+
+
+
   free(grille);
   free(E);
-  free_(M, N);
-  free_(D, N);
+  free_(M, N-2); 
+  free_(D, N-2);
 
   
   return 0;
