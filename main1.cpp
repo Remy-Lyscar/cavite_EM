@@ -60,15 +60,10 @@ void init(double *grille, double *E)
       grille[i] = h*i; // Initialisation de la grille 
     }
 
-  E[0] = 0;
-  E[N-1] = 0; // On impose les conditions aux limites de Dirichlet
-  // RQ: on ne considère pas des matrices par bloc, mais on peut extraire la sous-matrice correspondant
-  // à  l'action de l'opérateur sur les points intérieurs de la grille
-
-  // Initialisation du reste des valeurs de E
-  for(i=1;i<N-1; i++)
+  // Initialisation des valeurs de E
+  for(i=0;i<N-2; i++)
     {
-      E[i] = 0;
+      E[i] = 0;   // On ne crée que le vecteur des valeurs intérieurs de E
     }
 
 }
@@ -104,7 +99,7 @@ int main()
  
   double *grille = (double*)malloc(N*sizeof(double)); // subdivision de l'axe de la cavité à 1D
   // Pour l'instant la subdivision est régulière, mais on pourrait imaginer tout type de géométrie pour la grille 
-  double *E = (double*)malloc(N*sizeof(double)); // vecteur contenant les valeurs du champ E 
+  double *E = (double*)malloc((N-2)*sizeof(double)); // vecteur contenant les valeurs du champ E 
 
   double** D = NULL; // élements de matrice du laplacien en 1D
   double **M = NULL; // élements de la matrice de masse en 1D 
