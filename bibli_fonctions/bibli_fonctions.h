@@ -1,7 +1,7 @@
 #ifndef FONCTIONS_MAGISTERE_H
 #define  FONCTIONS_MAGISTERE_H
 
-// #include<Python.h>
+#include<Python.h>
 #include<stdlib.h>
 #include<stdio.h>
 #include<math.h>

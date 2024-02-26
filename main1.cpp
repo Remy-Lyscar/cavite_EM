@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
-// #include"bibli_fonctions.h" // RQ: j'ai commenté la ligne #include <Python.h>, il faut la décommenter chaque fois que je veux l'utiliser
+#include <time.h>
+// #include"bibli_fonctions.h" 
 // #include"bibli_perso.h"
 
 using namespace std;
@@ -51,7 +52,8 @@ void masse_mat(double **M, double *z)
 
 
 void init(double *grille, double *E)
-  /* La fonction init permet d'initialiser le problème: on initialise le vecteur contenant les valeurs de E selon z ainsi que la grille définissant le problème en fonction de la longueur L de la cavité; on initialise les fonctions tentes*/
+  /* La fonction init permet d'initialiser le problème: on initialise le vecteur contenant les valeurs de E selon z ainsi que la grille définissant le problème en fonction de la longueur L de la cavité; 
+  pas besoin d'initialiser les fonctions de base, vu que tous les calculs d'éléments de matrice peuvent s'effectuer à la main*/
 {
   int i;
   double h = L/(N-1);
@@ -63,7 +65,7 @@ void init(double *grille, double *E)
   // Initialisation des valeurs de E
   for(i=0;i<N-2; i++)
     {
-      E[i] = 0;   // On ne crée que le vecteur des valeurs intérieurs de E
+      E[i] = 0;   // On ne crée que le vecteur des valeurs intérieurs de E, de dimension N-2
     }
 
 }
@@ -93,13 +95,56 @@ void free_(double **m, int n)
 }
 
 
+void affichage(double *E, double* grille, double**D, double **M)
+{
+  fstream f; 
+  f.open("verif.txt", ios::out); 
+
+  int k; 
+  for(k=0; k<N; k++)
+  {
+    f << grille[k] << " "; 
+  }
+  f << endl; 
+
+    for(k=0; k<N; k++)
+  {
+    f << E[k] << " "; 
+  }
+  f << endl; 
+
+  int i,j; 
+  for (i=0; j<N-2; j++)
+  {
+    for(j=0; j<N-2; j++)
+    {
+      f << M[i][j] << " "; 
+    }
+    f << endl;
+  }
+  f << endl;
+
+   for (i=0; j<N-2; j++)
+  {
+    for(j=0; j<N-2; j++)
+    {
+      f << D[i][j] << " "; 
+    }
+    f << endl;
+  }
+  f << endl;
+
+  f.close(); 
+}
+
+
 
 int main()
 {
  
   double *grille = (double*)malloc(N*sizeof(double)); // subdivision de l'axe de la cavité à 1D
   // Pour l'instant la subdivision est régulière, mais on pourrait imaginer tout type de géométrie pour la grille 
-  double *E = (double*)malloc((N-2)*sizeof(double)); // vecteur contenant les valeurs du champ E 
+  double *E = (double*)malloc((N-2)*sizeof(double)); // vecteur contenant les valeurs intérieures du champ E 
 
   double** D = NULL; // élements de matrice du laplacien en 1D
   double **M = NULL; // élements de la matrice de masse en 1D 
@@ -115,52 +160,12 @@ int main()
   laplacien_mat(D, grille);
   masse_mat(M, grille); 
 
-  // Affichage dans des fichiers pour vérification
-  fstream check; 
-  check.open("check.txt", ios::out); 
+  // Affichage des vecteurs et matrice dans des fichiers pour vérification (ne marche pas sur mon ordi ?)
+  // affichage(E, grille, D, M)
 
-  fstream f; 
-  f.open("hello.txt", ios::out); 
-  f << "Hello world" << endl; 
 
-  f.close();
 
-  int k; 
-  for(k=0; k<N; k++)
-  {
-    check << grille[k] << " "; 
-  }
-  check << endl; 
-
-    for(k=0; k<N; k++)
-  {
-    check << E[k] << " "; 
-  }
-  check << endl; 
-
-  int i,j; 
-  for (i=0; j<N-2; j++)
-  {
-    for(j=0; j<N-2; j++)
-    {
-      check << M[i][j] << " "; 
-    }
-    check << endl;
-  }
-  check << endl;
-
-   for (i=0; j<N-2; j++)
-  {
-    for(j=0; j<N-2; j++)
-    {
-      check << D[i][j] << " "; 
-    }
-    check << endl;
-  }
-  check << endl;
-
-  check.close(); 
-
+  // Résolution du système matriciel 
 
 
   free(grille);
