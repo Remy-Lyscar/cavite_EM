@@ -3,12 +3,12 @@
 #include <iostream>
 #include <fstream>
 #include <time.h>
-// #include"bibli_fonctions.h" 
+#include"bibli_fonctions.h" // A decommenter lorsque je veux faire des plots Python sur les ordis du magistère (Python.h pas reconnu par VSC)
 // #include"bibli_perso.h"
 
 using namespace std;
 
-const int N = 100; // nombre de points de la grille
+const int N = 10; // nombre de points de la grille
 const double L = 10; // Longueur de la cavité -> plus tard il faudra demander à l'utilisateur de rentrer une valeur et le programme devra s'adapter
 
 
@@ -74,7 +74,7 @@ void init(double *grille, double *E)
 void alloc_(double **m, int n)
 {
   int i;
-  m = (double **)malloc(n*sizeof(double));
+  m = (double **)malloc(n*sizeof(double*));
   for(i=0; i<n; i++)
     {
       m[i] = (double *)malloc(n*sizeof(double));
@@ -107,14 +107,14 @@ void affichage(double *E, double* grille, double**D, double **M)
   }
   f << endl; 
 
-    for(k=0; k<N; k++)
+    for(k=0; k<N-2; k++)
   {
     f << E[k] << " "; 
   }
   f << endl; 
 
   int i,j; 
-  for (i=0; j<N-2; j++)
+  for (i=0; i<N-2; i++)
   {
     for(j=0; j<N-2; j++)
     {
@@ -124,7 +124,7 @@ void affichage(double *E, double* grille, double**D, double **M)
   }
   f << endl;
 
-   for (i=0; j<N-2; j++)
+   for (i=0; i<N-2; i++)
   {
     for(j=0; j<N-2; j++)
     {
@@ -139,6 +139,119 @@ void affichage(double *E, double* grille, double**D, double **M)
 
 
 
+void cholesky(double **A,int n,  double **L, double **Lt)
+{
+
+  double **S = (double **)malloc(n*sizeof(double*)); // Sert à ne pas modifier la matrice A (on verra plus tard)
+  int i,j,k,l,p;
+  for (i=0; i<n; i++)
+    {
+      S[i] = (double*)malloc(n*sizeof(double));
+    }
+  
+  for (i=0; i<n; i++)
+    {
+      Lt[i][i] = sqrt(A[i][i]);
+      for (j=i+1; j<n; j++)
+	{
+	  Lt[i][j] = A[i][j]/sqrt(A[i][i]);
+	}
+      for (k=i+1; k<n; k++)
+	{
+	  
+	  for (l=k; l<n; l++)
+	    {
+	      for (p=k; p<n; p++)
+		{
+		  A[k][l] -= Lt[i][k]*Lt[i][p];
+		    }
+	    }
+	}
+    }
+
+  // Transposer ensuite pour avoir la matrice L (utiliser des fonctions de la bibliothèque standard
+  // ou de la bibliothèque du magistère
+
+  // Pour l'instant je le fais à la main
+  for (i=0; i<n; i++)
+    {
+      for (j=0; j<n; j++)
+	{
+	  L[i][j] = Lt[j][i];
+	}
+    }
+      
+
+  // il faudra optimiser plus tard (notamment le calcul des racines est fait deux fois
+}
+
+
+
+void aff_cholesky(double **Lt, double **L)
+{
+  fstream f;
+  f.open("cholesky.txt", ios::out);
+  
+  int i,j; 
+  for (i=0; i<N-2; i++)
+  {
+    for(j=0; j<N-2; j++)
+    {
+      f << Lt[i][j] << " "; 
+    }
+    f << endl;
+  }
+  f << endl;
+
+
+  for (i=0; i<N-2; i++)
+  {
+    for(j=0; j<N-2; j++)
+    {
+      f << L[i][j] << " "; 
+    }
+    f << endl;
+  }
+  f << endl;
+
+  f.close();
+}
+
+
+
+void C_calc(double **L, double **D, double **Lt, double**C, n)
+{
+  // On utilise une fonction de la bibliothèque du magistère
+
+  int i;
+  double **Lt_inv = (double **)malloc(n*sizeof(double*));
+  for(i=0; i<n; i++)
+    {
+      Lt_inv[i] = (double *)malloc(n*sizeof(double));
+    }
+
+  double **L_inv = (double **)malloc(n*sizeof(double*));
+  for(i=0; i<n; i++)
+    {
+      L_inv[i] = (double *)malloc(n*sizeof(double));
+    }
+  
+  double **TMP = (double **)malloc(n*sizeof(double*));
+  for(i=0; i<n; i++)
+    {
+      TMP[i] = (double *)malloc(n*sizeof(double));
+    }
+  mat_inv(Lt, Lt_inv, n);  // Rq: Ici on ne se sert du coup pas des propriétés des matrices L et Lt pour inverser les matrices plus rapidement ?? 
+
+  mat_prod(D, Lt_inv, TMP, n, n, n);
+  mat_prod(L_inv, TMP, C, n, n, n);
+
+}
+
+  
+
+    
+
 int main()
 {
  
@@ -146,10 +259,16 @@ int main()
   // Pour l'instant la subdivision est régulière, mais on pourrait imaginer tout type de géométrie pour la grille 
   double *E = (double*)malloc((N-2)*sizeof(double)); // vecteur contenant les valeurs intérieures du champ E 
 
-  double** D = NULL; // élements de matrice du laplacien en 1D
-  double **M = NULL; // élements de la matrice de masse en 1D 
-  alloc_(M,N);
-  alloc_(D,N); 
+  double** D = (double **)malloc((N-2)*sizeof(double *)); // élements de matrice du laplacien en 1D
+  double **M = (double **)malloc((N-2)*sizeof(double *)); // élements de la matrice de masse en 1D 
+
+
+  int i;
+  for (i=0; i<(N-2); i++)
+    {
+      D[i] = (double *)malloc((N-2)*sizeof(double));
+      M[i] = (double *)malloc((N-2)*sizeof(double));
+}
 
 
   // initialisation des tableaux E et grille, en prenant en compte les conditions de Dirichlet aux bords 
@@ -161,11 +280,36 @@ int main()
   masse_mat(M, grille); 
 
   // Affichage des vecteurs et matrice dans des fichiers pour vérification (ne marche pas sur mon ordi ?)
-  // affichage(E, grille, D, M)
+  // affichage(E, grille, D, M);
 
 
+  // Résolution du système matriciel
 
-  // Résolution du système matriciel 
+  // Décomposition de Cholesky
+  double** L = (double **)malloc((N-2)*sizeof(double *)); 
+  double **Lt = (double **)malloc((N-2)*sizeof(double *));  
+
+
+  for (i=0; i<(N-2); i++)
+    {
+      L[i] = (double *)malloc((N-2)*sizeof(double));
+      Lt[i] = (double *)malloc((N-2)*sizeof(double));
+    }
+
+  cholesky(M, N-2, L, Lt);
+  // aff_cholesky(Lt, L);
+
+  // Calcul de la matrice C intervenant dans le problème aux valeurs propres
+  // RQ: A la fin je cleanerai le code pour que toutes les matrices soient allouées à un seul endroit du code (hormis dans les fonctions qui utilisent des matrices TMP)
+  double **C = (double **)malloc((N-2)*sizeof(double *));  
+
+
+  for (i=0; i<(N-2); i++)
+    {
+      C[i] = (double *)malloc((N-2)*sizeof(double));
+    }
+
+  C_calc(L, D, Lt, C, N-2);  
 
 
   free(grille);
