@@ -71,6 +71,10 @@ void init(double *grille, double *E)
 }
 
 
+
+
+// Rq: cette fonction d'allocation ne fonctionne pas (en fait je modifie le pointeur donné en argument mais pas ce 
+// qu'il y a à l'adresse du pointeur) -> revoir le cours sur les pointeurs pour comprendre
 void alloc_(double **m, int n)
 {
   int i;
@@ -170,7 +174,7 @@ void cholesky(double **A,int n,  double **L, double **Lt)
     }
 
   // Transposer ensuite pour avoir la matrice L (utiliser des fonctions de la bibliothèque standard
-  // ou de la bibliothèque du magistère
+  // ou de la bibliothèque du magistère)
 
   // Pour l'instant je le fais à la main
   for (i=0; i<n; i++)
@@ -182,7 +186,7 @@ void cholesky(double **A,int n,  double **L, double **Lt)
     }
       
 
-  // il faudra optimiser plus tard (notamment le calcul des racines est fait deux fois
+  // il faudra optimiser plus tard (notamment le calcul des racines est fait deux fois)
 }
 
 
@@ -220,6 +224,7 @@ void aff_cholesky(double **Lt, double **L)
 
 
 void C_calc(double **L, double **D, double **Lt, double**C, n)
+// Calcul de la matrice C intervenant dans le problème aux vaps
 {
   // On utilise une fonction de la bibliothèque du magistère
 
@@ -242,15 +247,182 @@ void C_calc(double **L, double **D, double **Lt, double**C, n)
       TMP[i] = (double *)malloc(n*sizeof(double));
     }
   mat_inv(Lt, Lt_inv, n);  // Rq: Ici on ne se sert du coup pas des propriétés des matrices L et Lt pour inverser les matrices plus rapidement ?? 
+  mat_inv(L, L_inv, n);
 
   mat_prod(D, Lt_inv, TMP, n, n, n);
   mat_prod(L_inv, TMP, C, n, n, n);
 
 }
 
-  
 
-    
+// à mettre dans bibli_perso
+void produit_scalaire(double *a, double *b, double *rst, int n)
+{
+  int i; 
+  *rst = 0; 
+  for (i=0; i<n; i++)
+  {
+    *rst += a[i]*b[i];
+
+  }
+}
+
+
+void norme(double *a, double *rst, int n)
+{
+  int i; 
+  *rst = 0; 
+  for (i=0; i<n; i++)
+  {
+    *rst += a[i] * a[i];
+
+  }
+  *rst = sqrt(*rst);
+}
+
+
+
+void vecteur_canonique(double *b, int n)
+// Renvoie le vecteur b1 = (1, 0, ... ,0) de la base canonique
+// Utilisé par la transformation de Householder pour la décomposition QR 
+
+{
+  int i; 
+  b[0] = 1; 
+  for (i=1; i<n; i++)
+  {
+    b[i] = 0;
+  }
+}
+
+
+void copie_mat(double **A, double **B, int n)
+// copie la matrice A dans la matrice B 
+{
+  int i,j; 
+  for (i=0; i<n; i++)
+  {
+    for (j=0; j<n; j++)
+    {
+      B[i][j] = A[i][j];
+    }
+  }
+}
+
+
+void reflexion(double *x, double **P, int n, int k)
+// Calcul de la matrice de réflexion à chaque itération de la procédure de Householder 
+// Seul le bloc inférieur de dimension (n-k) est différent de l'identité
+
+{
+  int i, j; 
+  
+  double  *u= NULL; // contient le vecteur u à partir duquel on définit e
+  u = (double *)malloc((n-k)*sizeof(double));
+
+  double  *b= NULL; 
+  b = (double *)malloc((n-k)*sizeof(double));
+
+  double  *e= NULL; 
+  e = (double *)malloc((n-k)*sizeof(double));
+
+  double norme_x = 0; 
+  norme(x, &norme_x, n-k); 
+  vecteur_canonique(b, n-k);
+
+  for (i=0; i<(n-k); i++)
+  {
+    u[i] = x[i] - norme_x*b[i]; 
+  }
+
+  double norme_u = 0; 
+  norme(u, &norme_u, n-k); 
+
+  for (i=0; i<(n-k); i++)
+  {
+    e[i] = u[i] / (norme_u);  
+  }
+
+  // Calcul de la matrice de réflexion
+
+  for (i=0; i<k; i++)
+  {
+    for (j=0; j<k; j++)
+    {
+      if (j==i)
+      {
+        P[i][j] = 1; 
+      }
+      else
+      {
+        P[i][j] = 0; 
+      }
+    }
+  }
+
+  
+  for (i=0; i<(n-k); i++)
+  {
+    for (j=0; j<(n-k); j++)
+    {
+      if (j==i)
+      {
+        P[i+k][j+k] = 1 - 2*e[i]*e[j];
+      }
+      else
+      {
+        P[i+k][j+k] = -2*e[i]*e[j];
+      }
+    }
+  }
+}
+
+
+void householder(double **A, double **Q, double **R, int n)
+// Effectue la décomposition QR de la matrice carrée A de taille n, en utilisant l'algorithme de Householder
+{
+  int i, j k; 
+
+  // Dans un premier temps il faut égaliser les matrices A et Q
+  copie_mat(A, Q, n);
+
+  double **P = NULL; // Contient les matrices de réflexion à chaque itération
+  P = (double **)malloc(n*sizeof(double *));  
+  for (i=0; i<n; i++)
+    {
+      P[i] = (double *)malloc(n*sizeof(double));
+    }
+
+  double **TMP = NULL; 
+  TMP = (double **)malloc(n*sizeof(double *));  
+  for (i=0; i<n; i++)
+    {
+      TMP[i] = (double *)malloc(n*sizeof(double));
+    } 
+
+  
+  for (k=0; k<(n-1); k++)  // PAs besoin de faire n itérations, il n'y a rien à faire sur la dernière colonne
+  {
+    double *x = NULL;   // contient le vecteur x à chaque itération
+    x = (double *)malloc((n-k)*sizeof(double));
+
+    for (i=k; i<n; i++)
+    {
+      x[i] = A[i];
+    }
+
+    reflexion(x, P, n, k);
+
+    mat_prod(P, Q, TMP, n, n, n); 
+    copie_mat(TMP, Q, n);
+  }
+
+  mat_prod(Q, A, R, n, n, n);
+  mat_inv(Q, TMP, n);
+  copie_mat(TMP,Q,n);
+}
+
+
 
 int main()
 {
@@ -283,7 +455,7 @@ int main()
   // affichage(E, grille, D, M);
 
 
-  // Résolution du système matriciel
+  // ********** Résolution du système matriciel **********
 
   // Décomposition de Cholesky
   double** L = (double **)malloc((N-2)*sizeof(double *)); 
@@ -310,6 +482,28 @@ int main()
     }
 
   C_calc(L, D, Lt, C, N-2);  
+
+
+  // Algorithme QR appliqué à la matrice C pour déterminer ses vaps
+  // RQ: la décomposition LU est plus efficace pour inverser une matrice, mais la décomposition QR 
+  // est plus adaptée à la recherche de vaps et de veps
+
+  double *V = (double*)malloc((N-2)*sizeof(double));  // Vecteur qui va accueillir les valeurs propres de C 
+
+
+
+
+
+  // On en déduit les vecteurs d'onde k possibles
+
+  double *k = (double*)malloc((N-2)*sizeof(double));
+  for (i=0; i<(N-2); i++)
+  {
+    k[i] = sqrt(-(V[i]));
+  }
+
+
+  // ********** Affichage des résultats - Comparaison avec les solutions analytiques **********
 
 
   free(grille);
