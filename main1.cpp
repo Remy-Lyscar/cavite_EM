@@ -10,6 +10,7 @@ using namespace std;
 
 const int N = 10; // nombre de points de la grille
 const double L = 10; // Longueur de la cavité -> plus tard il faudra demander à l'utilisateur de rentrer une valeur et le programme devra s'adapter
+const int MODE = 3; // mode que l'on souhaite afficher dans Python (comme comparaison des solutions analytiques et calculées)
 
 
 /* Résolution de l'équation d'onde dans une cavité à 1D pour un champ électrique E(z,t) se propageant à une direction selon z. Si l'on considère une onde monochromatique l'équation devient l'équation de Helmholtz, beaucoup plus simple à résoudre. */ 
@@ -185,6 +186,7 @@ void cholesky(double **A,int n,  double **L, double **Lt)
 	}
     }
       
+  free_(S, n);
 
   // il faudra optimiser plus tard (notamment le calcul des racines est fait deux fois)
 }
@@ -252,6 +254,9 @@ void C_calc(double **L, double **D, double **Lt, double**C, n)
   mat_prod(D, Lt_inv, TMP, n, n, n);
   mat_prod(L_inv, TMP, C, n, n, n);
 
+  free_(TMP, n);
+  free_(L_inv, n); 
+  free_(Lt_inv, n);
 }
 
 
@@ -375,6 +380,11 @@ void reflexion(double *x, double **P, int n, int k)
       }
     }
   }
+
+  free(u); 
+  free(e); 
+  free(b); 
+
 }
 
 
@@ -383,8 +393,12 @@ void householder(double **A, double **Q, double **R, int n)
 {
   int i, j k; 
 
-  // Dans un premier temps il faut égaliser les matrices A et Q
-  copie_mat(A, Q, n);
+  double **Q_TMP= NULL; // Contient la matrice Q_transpose à chaque itération
+  Q_TMP = (double **)malloc(n*sizeof(double *));  
+  for (i=0; i<n; i++)
+    {
+      Q_TMP[i] = (double *)malloc(n*sizeof(double));
+    }
 
   double **P = NULL; // Contient les matrices de réflexion à chaque itération
   P = (double **)malloc(n*sizeof(double *));  
@@ -413,13 +427,105 @@ void householder(double **A, double **Q, double **R, int n)
 
     reflexion(x, P, n, k);
 
-    mat_prod(P, Q, TMP, n, n, n); 
-    copie_mat(TMP, Q, n);
+    if (k==0)
+    {
+      copie_mat(P, Q_TMP, n);
+    }
+    else
+    {
+      mat_prod(P, Q_TMP, TMP, n, n, n);
+      copie_mat(TMP, Q_TMP, n);
+    }
+
+    free(x);
   }
 
+  copie_mat(Q_TMP, Q, n);
+
   mat_prod(Q, A, R, n, n, n);
+  mat_inv(Q, TMP, n);  // Q: est-il vraiment nécessaire de renvoyer Q et non Q_transpose au vu de ce qu'on en fait après ?
+  copie_mat(TMP, Q, n);
+
+  free_(Q_TMP, n);
+  free_(TMP, n);
+  free_(P, n);
+
+}
+
+
+void schur(double **A, double **T, double**Q, int n, int m)
+// Effectue la décomposition de Schur de la matrice A, à l'aide la décomposition QR 
+// réalisée par la procédure de Householder
+// m est le nombre d'itérations, normalement on est censé arriver "rapidement" à une matrice 
+// A_m = T triangulaire supérieure avec une précision suffisante pour en trouver les vaps et les veps 
+
+{
+  int i, j, k; 
+
+  double **Q_TMP = NULL;  // contient les matrices Q calculées à chaque itération
+  Q_TMP = (double **)malloc(n*sizeof(double *));  
+  for (i=0; i<n; i++)
+    {
+      Q_TMP[i] = (double *)malloc(n*sizeof(double));
+    } 
+
+  double **R_TMP = NULL;  // contient les matrices R calculées à chaque itération
+  R_TMP = (double **)malloc(n*sizeof(double *));  
+  for (i=0; i<n; i++)
+    {
+      R_TMP[i] = (double *)malloc(n*sizeof(double));
+    } 
+  
+  double **TMP = NULL; 
+  TMP = (double **)malloc(n*sizeof(double *));  
+  for (i=0; i<n; i++)
+    {
+      TMP[i] = (double *)malloc(n*sizeof(double));
+    } 
+
+
+  for (k=0; k<m; k++)
+  {
+    householder(A, Q_TMP, R_TMP, n); 
+    A = mat_prod(R_TMP, Q_TMP, TMP, n, n, n);
+    copie_mat(TMP, A, n);
+
+    if (m==0)
+    {
+      mat_inv(Q_TMP, TMP, n);   // Car on calcule en fait Q_transpose ici 
+      copie_mat(TMP, Q, n);
+    }
+    else
+    {
+      mat_inv(Q_TMP, TMP, n);
+      copie_mat(TMP, Q_TMP, n);
+      mat_prod(Q_TMP, Q, TMP, n, n, n);
+      copie_mat(TMP, Q, n);
+    }
+  }
+
+  copie_mat(A, T, n); // T a priori trigsup avec suffisamment de précision pour m assez grand 
+
   mat_inv(Q, TMP, n);
-  copie_mat(TMP,Q,n);
+  copie_mat(TMP,Q, n);  // Q est la matrice de passage qui contient les vecteurs propres !
+
+
+  free_(Q_TMP, n);
+  free_(R_TMP, n);
+  free_(TMP, n);
+
+}
+
+
+
+void vaps(double *V, double **T, int n)
+// Renvoie les valeurs propres de T triées dans l'ordre croissant (pour l'instant j'utilise une fonction que j'ai codé qui n'est pas efficace)
+{
+  int i; 
+  for (i=0; i<n; i++)
+  {
+    V[i] = T[i][i]; 
+  }
 }
 
 
@@ -427,6 +533,10 @@ void householder(double **A, double **Q, double **R, int n)
 int main()
 {
  
+
+  // ********** Initialisation du problème **********
+
+
   double *grille = (double*)malloc(N*sizeof(double)); // subdivision de l'axe de la cavité à 1D
   // Pour l'instant la subdivision est régulière, mais on pourrait imaginer tout type de géométrie pour la grille 
   double *E = (double*)malloc((N-2)*sizeof(double)); // vecteur contenant les valeurs intérieures du champ E 
@@ -488,10 +598,25 @@ int main()
   // RQ: la décomposition LU est plus efficace pour inverser une matrice, mais la décomposition QR 
   // est plus adaptée à la recherche de vaps et de veps
 
+  int m = 10; // nombre d'itération de l'algorithme QR 
+
   double *V = (double*)malloc((N-2)*sizeof(double));  // Vecteur qui va accueillir les valeurs propres de C 
 
+  double **T = (double **)malloc((N-2)*sizeof(double *));  
+  for (i=0; i<(N-2); i++)
+    {
+      T[i] = (double *)malloc((N-2)*sizeof(double));
+    }
 
 
+  double **Q = (double **)malloc((N-2)*sizeof(double *));  
+  for (i=0; i<(N-2); i++)
+    {
+      Q[i] = (double *)malloc((N-2)*sizeof(double));
+    }
+
+  schur(C, T, Q, N-2, m);
+  vaps(V, T, N-2);
 
 
   // On en déduit les vecteurs d'onde k possibles
@@ -501,15 +626,56 @@ int main()
   {
     k[i] = sqrt(-(V[i]));
   }
+  // Pour chaque valeur propre k_i le vecteur propre associé est la i-eme colonne de la matrice Q de la décomposition de Schur
 
 
   // ********** Affichage des résultats - Comparaison avec les solutions analytiques **********
+
+
+  // Affichage de la grille et des fonctions tentes
+
+
+  // Solutions analytiques (pour le mode choisi par l'utilisateur): on ne représente pour l'instant que l'enveloppe
+  
+  // il faut créer un fichier contenant les données du problème pour que Python puisse s'y retrouver 
+  
+  osstringstream pyth; 
+  pyth 
+    << "import numpy as np\n"
+    << "data = loadtxt('data.dat')\n"
+    << "L = data[1]\n"
+    << "Z = np.linspace(0, L, 1000)\n"
+    << "m = data[2]\n"
+    << "Y = [np.sin((m*np.pi*z)/L) for z in Z]\n"
+    << "plot(Z,Y)\n"
+    ; 
+
+  make_plot_py(pyth);
+
+  
+
+
+
+  // Solutions calculées (pour le mode choisi par l'utilisateur)
+
+
+
+
+
+
 
 
   free(grille);
   free(E);
   free_(M, N-2); 
   free_(D, N-2);
+  free_(L, N-2); 
+  free_(Lt, N-2);
+  free(V); 
+  free(k); 
+  free_(Q, N-2); 
+  free_(T, N-2); 
+  free_(C, N-2);
 
   
   return 0;

@@ -1,6 +1,9 @@
- - solveur sys matriciel
- - affichage des solutions et comparer avec les solutions analytiques
- - complexité algorithmique et temps d'éxécution
+- trier les vaps par ordre croissant 
+- affichage et comparaisons/ vérifications
+
+
+
+ - complexité algorithmique et temps d'éxécution (et optimisation)
 
  - mettre en ordre ma bibliothèque perso pour la suite du projet
  - commencer à rédiger le readme pour la soutenance 
