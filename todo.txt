@@ -1,4 +1,4 @@
-- trier les vaps par ordre croissant 
+- trier les vaps par ordre croissant (là elle sont en ordre décroissant pour l'instant!)
 - affichage et comparaisons/ vérifications
 
 
@@ -7,6 +7,8 @@
 
  - mettre en ordre ma bibliothèque perso pour la suite du projet
  - commencer à rédiger le readme pour la soutenance 
+
+ - essayer de trouver le problème pour les R dans householder et réflexion (mais ça semble marcher dans Schur à la fin !!!!)
 
 
  - méthodes spectrales

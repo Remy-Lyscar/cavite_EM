@@ -375,7 +375,7 @@ void reflexion(double *x, double **P, int n, int k)
 // Seul le bloc inférieur de dimension (n-k) est différent de l'identité
 
 {
-  int i, j; 
+  int i, j, m; 
   
   double  *u= NULL; // contient le vecteur u à partir duquel on définit e
   u = (double *)malloc((n-k)*sizeof(double));
@@ -405,19 +405,32 @@ void reflexion(double *x, double **P, int n, int k)
 
   // Calcul de la matrice de réflexion
 
+
+  for (m=0; m<k; m++)
+    {
+      for (i=0; i<n; i++)
+	{
+	  P[i][m] = 0;
+	}
+      for (j=0; j<n; j++)
+	{
+	  P[m][j] = 0;
+	}
+    }
+
+  for (i=0; i<n; i++) // boucle inutile mais pour être sur que tous les coefs sont réinitialisés 
+    {
+      for (j=0; j<n; j++)
+	{
+	  P[i][j] = 0;
+	}
+    }
+  
+  
+
   for (i=0; i<k; i++)
   {
-    for (j=0; j<k; j++)
-    {
-      if (j==i)
-      {
-        P[i][j] = 1; 
-      }
-      else
-      {
-        P[i][j] = 0; 
-      }
-    }
+    P[i][i] = 1; 
   }
 
   
@@ -441,7 +454,7 @@ void reflexion(double *x, double **P, int n, int k)
   fstream f2;
   f2.open("reflexions.txt", ios::app);
 
-  int l,p;
+  int l,p; 
   for (l=0; l<n  ; l++)
   {
     for(p=0; p<n  ; p++)
@@ -466,7 +479,8 @@ void reflexion(double *x, double **P, int n, int k)
 void householder(double **A, double **Q, double **R, int n)
 // Effectue la décomposition QR de la matrice carrée A de taille n, en utilisant l'algorithme de Householder
 {
-  int i,k; 
+  int i,k;
+  int p,l; 
 
   double **Q_TMP= NULL; // Contient la matrice Q_transpose à chaque itération
   Q_TMP = (double **)malloc(n*sizeof(double *));  
@@ -487,7 +501,16 @@ void householder(double **A, double **Q, double **R, int n)
   for (i=0; i<n; i++)
     {
       TMP[i] = (double *)malloc(n*sizeof(double));
-    } 
+    }
+
+  double **R_TMP = NULL; // contient la matrice R à chaque itération
+  R_TMP = (double **)malloc(n*sizeof(double *));  
+  for (i=0; i<n; i++)
+    {
+      R_TMP[i] = (double *)malloc(n*sizeof(double));
+    }
+
+  copie_mat(A, R_TMP, n); // on initialise la matrice R à A 
 
   
   for (k=0; k<(n-1); k++)  // PAs besoin de faire n itérations, il n'y a rien à faire sur la dernière colonne
@@ -502,6 +525,9 @@ void householder(double **A, double **Q, double **R, int n)
 
     reflexion(x, P, n, k);
 
+    mat_prod(P, R_TMP, TMP, n, n, n);
+    copie_mat(TMP, R_TMP, n); 
+
     if (k==0)
     {
       copie_mat(P, Q_TMP, n);
@@ -512,6 +538,21 @@ void householder(double **A, double **Q, double **R, int n)
       copie_mat(TMP, Q_TMP, n);
     }
 
+    fstream f4;
+    f4.open("iterations_R_TMP.txt", ios::app);
+    
+    for (l=0; l<n  ; l++)
+      {
+	for(p=0; p<n  ; p++)
+	  {
+	    f4<< R_TMP[l][p] << " "; 
+	  }
+	f4<< endl;
+      }
+    f4<< endl;
+    f4 << endl;
+    f4.close(); 
+
     free(x);
   }
 
@@ -520,7 +561,7 @@ void householder(double **A, double **Q, double **R, int n)
   fstream f1;
   f1.open("iterations_householder.txt", ios::app);
 
-  int l,p; 
+   
   for (l=0; l<n  ; l++)
   {
     for(p=0; p<n  ; p++)
@@ -769,6 +810,29 @@ int main()
   aff_k(k, N-2);
   // Pour chaque valeur propre k_i le vecteur propre associé est la i-eme colonne de la matrice Q de la décomposition de Schur
 
+  // D'abord on calcul uniquement le vep associé au mode 3 pour avoir un beau plot, ensuite on fera un truc plus élégant
+  
+  for (i=0; i<N-2; i++)
+    {
+      E[i] = Q[i][5];
+    }
+
+  fstream vep;
+  vep.open("vep.dat", ios::out);
+  for (i=0; i<N-2; i++)
+    {
+      vep << E[i] << endl;
+    }
+  vep.close();
+
+
+  fstream fgrille;
+  fgrille.open("grille.dat", ios::out); 
+  for(i=0; i<N-2; i++)
+  {
+   fgrille << grille[i] << endl; 
+  }
+  fgrille.close(); 
 
   // ********** Affichage des résultats - Comparaison avec les solutions analytiques **********
 
@@ -780,18 +844,18 @@ int main()
   
   // il faut créer un fichier contenant les données du problème pour que Python puisse s'y retrouver 
   
-  //ostringstream pyth; 
-  //pyth 
-    //<< "import numpy as np\n"
-    //<< "data = loadtxt('data.dat')\n"
-    //<< "L = data[1]\n"
-    //<< "Z = np.linspace(0, L, 1000)\n"
-    //<< "m = data[2]\n"
-    //<< "Y = [np.sin((m*np.pi*z)/L) for z in Z]\n"
-    //<< "plot(Z,Y)\n"
-    //; 
+  ostringstream pyth; 
+    pyth 
+    << "import numpy as np\n"
+    << "Z = np.linspace(0,10, 1000)\n"
+    << "Y = [np.sin((3*np.pi*z)/10) for z in Z]\n"
+    << "E = loadtxt('vep.dat')\n"
+    << "G = loadtxt('grille.dat')\n"
+    << "plot(G,E, '+')\n"
+    << "plot(Z,Y)\n"
+    ; 
 
-  //make_plot_py(pyth);
+  make_plot_py(pyth);
 
   
 
