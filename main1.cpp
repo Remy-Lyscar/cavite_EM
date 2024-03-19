@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <time.h>
-#include"bibli_fonctions.h" // A decommenter lorsque je veux faire des plots Python sur les ordis du magistère (Python.h pas reconnu par VSC)
+#include "bibli_fonctions.h" // A decommenter lorsque je veux faire des plots Python sur les ordis du magistère (Python.h pas reconnu par VSC)
 // #include"bibli_perso.h"
 
 using namespace std;
@@ -224,8 +224,63 @@ void aff_cholesky(double **Lt, double **L)
 }
 
 
+void aff_c(double **C, int n)
+{
+  fstream fc;
+  fc.open("c.dat", ios::out);
 
-void C_calc(double **L, double **D, double **Lt, double**C, n)
+  int i, j;
+  for (i=0; i<n; i++)
+  {
+    for(j=0; j<n; j++)
+    {
+      fc << C[i][j] << " "; 
+    }
+    fc << endl;
+  }
+  fc << endl;
+  fc.close();
+}
+
+
+
+
+void aff_T(double **T, int n)
+{
+  fstream ft;
+  ft.open("T.dat", ios::out);
+
+  int i, j;
+  for (i=0; i<n; i++)
+  {
+    for(j=0; j<n; j++)
+    {
+      ft << T[i][j] << " "; 
+    }
+    ft << endl;
+  }
+  ft << endl;
+  ft.close();
+
+}
+
+
+void aff_k(double *k, int n)
+{
+  fstream fk;
+  fk.open("vaps.dat", ios::out);
+  int i;
+  for (i=0; i<n; i++)
+    {
+      fk << k[i] << endl;
+    }
+  fk.close();
+}
+  
+
+
+
+void C_calc(double **L, double **D, double **Lt, double**C, int n)
 // Calcul de la matrice C intervenant dans le problème aux vaps
 {
   // On utilise une fonction de la bibliothèque du magistère
@@ -381,6 +436,26 @@ void reflexion(double *x, double **P, int n, int k)
     }
   }
 
+
+
+  fstream f2;
+  f2.open("reflexions.txt", ios::app);
+
+  int l,p;
+  for (l=0; l<n  ; l++)
+  {
+    for(p=0; p<n  ; p++)
+    {
+      f2<< P[l][p] << " "; 
+    }
+    f2<< endl;
+  }
+  f2<< endl;
+  f2<< endl; 
+
+  f2.close(); 
+
+  
   free(u); 
   free(e); 
   free(b); 
@@ -391,7 +466,7 @@ void reflexion(double *x, double **P, int n, int k)
 void householder(double **A, double **Q, double **R, int n)
 // Effectue la décomposition QR de la matrice carrée A de taille n, en utilisant l'algorithme de Householder
 {
-  int i, j k; 
+  int i,k; 
 
   double **Q_TMP= NULL; // Contient la matrice Q_transpose à chaque itération
   Q_TMP = (double **)malloc(n*sizeof(double *));  
@@ -422,7 +497,7 @@ void householder(double **A, double **Q, double **R, int n)
 
     for (i=k; i<n; i++)
     {
-      x[i] = A[i];
+      x[i-k] = A[i][k];
     }
 
     reflexion(x, P, n, k);
@@ -442,9 +517,50 @@ void householder(double **A, double **Q, double **R, int n)
 
   copie_mat(Q_TMP, Q, n);
 
+  fstream f1;
+  f1.open("iterations_householder.txt", ios::app);
+
+  int l,p; 
+  for (l=0; l<n  ; l++)
+  {
+    for(p=0; p<n  ; p++)
+    {
+      f1<< Q[l][p] << " "; 
+    }
+    f1<< endl;
+  }
+  f1<< endl;
+
   mat_prod(Q, A, R, n, n, n);
   mat_inv(Q, TMP, n);  // Q: est-il vraiment nécessaire de renvoyer Q et non Q_transpose au vu de ce qu'on en fait après ?
   copie_mat(TMP, Q, n);
+
+
+  for (l=0; l<n  ; l++)
+  {
+    for(p=0; p<n  ; p++)
+    {
+      f1<< Q[l][p] << " "; 
+    }
+    f1<< endl;
+  }
+  f1<< endl;
+
+
+  for (l=0; l<n  ; l++)
+  {
+    for(p=0; p<n  ; p++)
+    {
+      f1<< R[l][p] << " "; 
+    }
+    f1<< endl;
+  }
+  f1<< endl;
+  f1<<endl;
+  f1<<endl; 
+
+  f1.close(); 
+  
 
   free_(Q_TMP, n);
   free_(TMP, n);
@@ -460,7 +576,11 @@ void schur(double **A, double **T, double**Q, int n, int m)
 // A_m = T triangulaire supérieure avec une précision suffisante pour en trouver les vaps et les veps 
 
 {
-  int i, j, k; 
+
+  fstream f;
+  f.open("iterations_schur.txt", ios::out);
+  
+  int i,k; 
 
   double **Q_TMP = NULL;  // contient les matrices Q calculées à chaque itération
   Q_TMP = (double **)malloc(n*sizeof(double *));  
@@ -486,9 +606,23 @@ void schur(double **A, double **T, double**Q, int n, int m)
 
   for (k=0; k<m; k++)
   {
-    householder(A, Q_TMP, R_TMP, n); 
-    A = mat_prod(R_TMP, Q_TMP, TMP, n, n, n);
+    householder(A, Q_TMP, R_TMP, n);
+    mat_prod(R_TMP, Q_TMP, TMP, n, n, n);
     copie_mat(TMP, A, n);
+
+    
+    int l,p; 
+    for (l=0; l<n; l++)
+      {
+	for(p=0; p<n; p++)
+	  {
+	    f << A[l][p] << " "; 
+	  }
+	f << endl;
+      }
+    f << endl;
+    f<<endl;
+    
 
     if (m==0)
     {
@@ -513,8 +647,12 @@ void schur(double **A, double **T, double**Q, int n, int m)
   free_(Q_TMP, n);
   free_(R_TMP, n);
   free_(TMP, n);
+  f.close(); 
 
 }
+
+
+
 
 
 
@@ -527,6 +665,7 @@ void vaps(double *V, double **T, int n)
     V[i] = T[i][i]; 
   }
 }
+  
 
 
 
@@ -591,8 +730,9 @@ int main()
       C[i] = (double *)malloc((N-2)*sizeof(double));
     }
 
-  C_calc(L, D, Lt, C, N-2);  
-
+  C_calc(L, D, Lt, C, N-2);
+  //aff_c(C, N-2); 
+  
 
   // Algorithme QR appliqué à la matrice C pour déterminer ses vaps
   // RQ: la décomposition LU est plus efficace pour inverser une matrice, mais la décomposition QR 
@@ -616,8 +756,8 @@ int main()
     }
 
   schur(C, T, Q, N-2, m);
+  aff_T(T, N-2);
   vaps(V, T, N-2);
-
 
   // On en déduit les vecteurs d'onde k possibles
 
@@ -626,6 +766,7 @@ int main()
   {
     k[i] = sqrt(-(V[i]));
   }
+  aff_k(k, N-2);
   // Pour chaque valeur propre k_i le vecteur propre associé est la i-eme colonne de la matrice Q de la décomposition de Schur
 
 
@@ -639,18 +780,18 @@ int main()
   
   // il faut créer un fichier contenant les données du problème pour que Python puisse s'y retrouver 
   
-  osstringstream pyth; 
-  pyth 
-    << "import numpy as np\n"
-    << "data = loadtxt('data.dat')\n"
-    << "L = data[1]\n"
-    << "Z = np.linspace(0, L, 1000)\n"
-    << "m = data[2]\n"
-    << "Y = [np.sin((m*np.pi*z)/L) for z in Z]\n"
-    << "plot(Z,Y)\n"
-    ; 
+  //ostringstream pyth; 
+  //pyth 
+    //<< "import numpy as np\n"
+    //<< "data = loadtxt('data.dat')\n"
+    //<< "L = data[1]\n"
+    //<< "Z = np.linspace(0, L, 1000)\n"
+    //<< "m = data[2]\n"
+    //<< "Y = [np.sin((m*np.pi*z)/L) for z in Z]\n"
+    //<< "plot(Z,Y)\n"
+    //; 
 
-  make_plot_py(pyth);
+  //make_plot_py(pyth);
 
   
 
