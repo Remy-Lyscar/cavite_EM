@@ -4,7 +4,7 @@
 #include <fstream>
 #include <time.h>
 #include "bibli_fonctions.h" // A decommenter lorsque je veux faire des plots Python sur les ordis du magistère (Python.h pas reconnu par VSC)
-#include"bibli_perso.h"
+//#include"bibli_perso.h"
 
 using namespace std;
 
