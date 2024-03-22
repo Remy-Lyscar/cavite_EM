@@ -4,7 +4,7 @@
 #include <fstream>
 #include <time.h>
 #include "bibli_fonctions.h" // A decommenter lorsque je veux faire des plots Python sur les ordis du magistère (Python.h pas reconnu par VSC)
-// #include"bibli_perso.h"
+#include"bibli_perso.h"
 
 using namespace std;
 
@@ -851,7 +851,8 @@ int main()
     << "Y = [np.sin((3*np.pi*z)/10) for z in Z]\n"
     << "E = loadtxt('vep.dat')\n"
     << "G = loadtxt('grille.dat')\n"
-    << "plot(G,E, '+')\n"
+    << "for i in range(len(E)): \n"
+    << "  plot(G[i], E[i], '+')\n"
     << "plot(Z,Y)\n"
     ; 
 
