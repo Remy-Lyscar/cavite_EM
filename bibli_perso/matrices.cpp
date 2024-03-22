@@ -10,6 +10,8 @@
 #include "bibli_fonctions.h"
 #include "bibli_perso.h"
 
+using namespace std;
+
 
 
 
