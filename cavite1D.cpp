@@ -3,7 +3,6 @@
 #include <iostream>
 #include <fstream>
 #include <time.h>
-#include "bibli_fonctions.h"
 #include"bibli_perso.h"
 
 using namespace std;
