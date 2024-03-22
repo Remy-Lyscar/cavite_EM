@@ -821,7 +821,7 @@ int main()
   schur(C, T, Q, N-2, m);
   aff_T(T, N-2);
   vaps(V, T, N-2);
-  tri_croissant(vaps, N-2);
+  tri_croissant(V, N-2);
 
   // On en déduit les vecteurs d'onde k possibles
 
