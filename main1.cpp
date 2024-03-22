@@ -8,8 +8,8 @@
 
 using namespace std;
 
-const int N = 10; // nombre de points de la grille
-const double L = 10; // Longueur de la cavité -> plus tard il faudra demander à l'utilisateur de rentrer une valeur et le programme devra s'adapter
+const int N = 20; // nombre de points de la grille
+const double L = 15; // Longueur de la cavité -> plus tard il faudra demander à l'utilisateur de rentrer une valeur et le programme devra s'adapter
 const int MODE = 3; // mode que l'on souhaite afficher dans Python (comme comparaison des solutions analytiques et calculées)
 
 
@@ -710,6 +710,28 @@ void vaps(double *V, double **T, int n)
 
 
 
+/* Classement des elements d'un tableau par ordre croissant */
+
+
+void tri_croissant(double *tabl, int n)
+{
+
+  int i, j; 
+  double piv; 
+
+  for (i = 1; i < n; i++){
+    piv = tabl[i];
+    for (j = i-1; j >= 0; j--)
+      if (piv >= tabl[j])
+	break;
+      else
+	tabl[j+1] = tabl[j];
+    tabl[j+1] = piv;
+  }
+}
+
+
+
 int main()
 {
  
@@ -779,7 +801,7 @@ int main()
   // RQ: la décomposition LU est plus efficace pour inverser une matrice, mais la décomposition QR 
   // est plus adaptée à la recherche de vaps et de veps
 
-  int m = 50; // nombre d'itération de l'algorithme QR 
+  int m = 30; // nombre d'itération de l'algorithme QR 
 
   double *V = (double*)malloc((N-2)*sizeof(double));  // Vecteur qui va accueillir les valeurs propres de C 
 
@@ -799,6 +821,7 @@ int main()
   schur(C, T, Q, N-2, m);
   aff_T(T, N-2);
   vaps(V, T, N-2);
+  tri_croissant(vaps, N-2);
 
   // On en déduit les vecteurs d'onde k possibles
 
