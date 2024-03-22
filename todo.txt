@@ -1,4 +1,9 @@
 - trier les vaps par ordre croissant (là elle sont en ordre décroissant pour l'instant!)
+- faire le processus de la soutenance en entier
+
+- mettre tous les changements de main1.cpp dans mes fichiers séparés !!! (tri vaps, aff_k, vep.txt, vap.txt)
+
+
 - affichage et comparaisons/ vérifications
 
 

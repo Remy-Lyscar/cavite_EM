@@ -268,11 +268,11 @@ void aff_T(double **T, int n)
 void aff_k(double *k, int n)
 {
   fstream fk;
-  fk.open("vaps.dat", ios::out);
+  fk.open("vaps.txt", ios::out);
   int i;
   for (i=0; i<n; i++)
     {
-      fk << k[i] << endl;
+      fk << ((i+1)*M_PI)/L << "   " << k[i] << endl;
     }
   fk.close();
 }
@@ -779,7 +779,7 @@ int main()
   // RQ: la décomposition LU est plus efficace pour inverser une matrice, mais la décomposition QR 
   // est plus adaptée à la recherche de vaps et de veps
 
-  int m = 10; // nombre d'itération de l'algorithme QR 
+  int m = 50; // nombre d'itération de l'algorithme QR 
 
   double *V = (double*)malloc((N-2)*sizeof(double));  // Vecteur qui va accueillir les valeurs propres de C 
 
@@ -818,7 +818,7 @@ int main()
     }
 
   fstream vep;
-  vep.open("vep.dat", ios::out);
+  vep.open("vep.txt", ios::out);
   for (i=0; i<N-2; i++)
     {
       vep << E[i] << endl;
@@ -827,7 +827,7 @@ int main()
 
 
   fstream fgrille;
-  fgrille.open("grille.dat", ios::out); 
+  fgrille.open("grille.txt", ios::out); 
   for(i=0; i<N-2; i++)
   {
    fgrille << grille[i] << endl; 
