@@ -8,8 +8,8 @@
 
 using namespace std;
 
-const int N = 20; // nombre de points de la grille
-const double L = 15; // Longueur de la cavité -> plus tard il faudra demander à l'utilisateur de rentrer une valeur et le programme devra s'adapter
+const int N = 10; // nombre de points de la grille
+const double L = 10; // Longueur de la cavité -> plus tard il faudra demander à l'utilisateur de rentrer une valeur et le programme devra s'adapter
 const int MODE = 3; // mode que l'on souhaite afficher dans Python (comme comparaison des solutions analytiques et calculées)
 
 
