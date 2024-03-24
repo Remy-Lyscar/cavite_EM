@@ -620,6 +620,9 @@ void schur(double **A, double **T, double**Q, int n, int m)
 
   fstream f;
   f.open("iterations_schur.txt", ios::out);
+
+  fstream f6;
+  f6.open("matrice_passage.txt", ios::out);
   
   int i,k; 
 
@@ -655,11 +658,11 @@ void schur(double **A, double **T, double**Q, int n, int m)
     int l,p; 
     for (l=0; l<n; l++)
       {
-	for(p=0; p<n; p++)
-	  {
-	    f << A[l][p] << " "; 
-	  }
-	f << endl;
+	      for(p=0; p<n; p++)
+	        {
+	          f << A[l][p] << " "; 
+	        }
+	      f << endl;
       }
     f << endl;
     f<<endl;
@@ -677,12 +680,30 @@ void schur(double **A, double **T, double**Q, int n, int m)
       mat_prod(Q_TMP, Q, TMP, n, n, n);
       copie_mat(TMP, Q, n);
     }
+
+
+    for (l=0; l<n  ; l++)
+    {
+      for(p=0; p<n  ; p++)
+      {
+        f6<< Q[l][p] << " "; 
+      }
+      f6<< endl;
+    }
+    f6<< endl;
+
+
   }
 
   copie_mat(A, T, n); // T a priori trigsup avec suffisamment de précision pour m assez grand 
 
   mat_inv(Q, TMP, n);
   copie_mat(TMP,Q, n);  // Q est la matrice de passage qui contient les vecteurs propres !
+
+   
+  
+
+  f6.close();
 
 
   free_(Q_TMP, n);
@@ -821,7 +842,6 @@ int main()
   schur(C, T, Q, N-2, m);
   aff_T(T, N-2);
   vaps(V, T, N-2);
-  tri_croissant(V, N-2);
 
   // On en déduit les vecteurs d'onde k possibles
 
@@ -830,6 +850,7 @@ int main()
   {
     k[i] = sqrt(-(V[i]));
   }
+  tri_croissant(k, N-2);
   aff_k(k, N-2);
   // Pour chaque valeur propre k_i le vecteur propre associé est la i-eme colonne de la matrice Q de la décomposition de Schur
 
