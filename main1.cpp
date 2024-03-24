@@ -8,8 +8,8 @@
 
 using namespace std;
 
-const int N = 20; // nombre de points de la grille
-const double L = 10; // Longueur de la cavité -> plus tard il faudra demander à l'utilisateur de rentrer une valeur et le programme devra s'adapter
+const int N = 10; // nombre de points de la grille
+const double L = 1; // Longueur de la cavité -> plus tard il faudra demander à l'utilisateur de rentrer une valeur et le programme devra s'adapter
 const int MODE = 3; // mode que l'on souhaite afficher dans Python (comme comparaison des solutions analytiques et calculées)
 
 
@@ -822,7 +822,7 @@ int main()
   // RQ: la décomposition LU est plus efficace pour inverser une matrice, mais la décomposition QR 
   // est plus adaptée à la recherche de vaps et de veps
 
-  int m = 30; // nombre d'itération de l'algorithme QR 
+  int m = 50; // nombre d'itération de l'algorithme QR 
 
   double *V = (double*)malloc((N-2)*sizeof(double));  // Vecteur qui va accueillir les valeurs propres de C 
 
