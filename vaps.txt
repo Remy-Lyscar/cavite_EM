@@ -1,0 +1,10 @@
+Valeurs de k analytiques       Valeurs de k calculées avec la méthodes des éléments finis
+
+0.10472                                0.115285
+0.20944                                0.2141
+0.314159                                0.326055
+0.418879                                0.437872
+0.523599                                0.583808
+0.628319                                0.714211
+0.733038                                0.850941
+0.837758                                0.994763

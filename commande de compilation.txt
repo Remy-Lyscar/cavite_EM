@@ -1,0 +1,2 @@
+g++ -lm -g -Wall -I/public/mphyo/bibli_fonctions -I/usr/include/python3.10 -I/home/tp-home009/195c9cd6-00fc-4441-8df1-ab624bc8b032/Documents/cavite_EM/bibli_perso cavite1D.cpp /home/tp-home009/195c9cd6-00fc-4441-8df1-ab624bc8b032/Documents/cavite_EM/bibli_perso/bibli_perso.ar /public/mphyo/bibli_fonctions/bibli_fonctions.ar -lpython3.10
+

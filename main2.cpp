@@ -8,8 +8,9 @@
 
 using namespace std;
 
-const int N = 10; // nombre de points de la grille
-const double L = 15; // Longueur de la cavité 
+const int N = 5; // nombre de points de la grille
+const double L = 15; // Longueur de la cavité -> plus tard il faudra demander à l'utilisateur de rentrer une valeur et le programme devra s'adapter
+const int MODE = 3; // mode que l'on souhaite afficher dans Python (comme comparaison des solutions analytiques et calculées)
 
 
 /* Résolution de l'équation d'onde dans une cavité à 1D pour un champ électrique E(z,t) se propageant à une direction selon z. Si l'on considère une onde monochromatique l'équation devient l'équation de Helmholtz, beaucoup plus simple à résoudre. */ 
@@ -574,6 +575,20 @@ void householder(double **A, double **Q, double **R, int n)
   f1<< endl;
 
   mat_prod(Q, A, R, n, n, n);
+
+  fstream f_inv;
+  f_inv.open("inv.txt", ios::out);
+
+  for (l=0; l<n; l++)
+    {
+      for(p=0; p<n; p++)
+	{
+	  f_inv << Q[l][p] << " ";
+	}
+      f_inv << endl;
+    }
+  f_inv << endl; 
+  
   mat_inv(Q, TMP, n);  // Q: est-il vraiment nécessaire de renvoyer Q et non Q_transpose au vu de ce qu'on en fait après ?
   copie_mat(TMP, Q, n);
 
@@ -671,12 +686,12 @@ void schur(double **A, double **T, double**Q, int n, int m)
 
     if (m==0)
     {
-      mat_inv(Q_TMP, TMP, n);   // Car on calcule en fait Q_transpose ici 
+      //mat_inv(Q_TMP, TMP, n);   // Car on calcule en fait Q_transpose ici 
       copie_mat(TMP, Q, n);
     }
     else
     {
-      mat_inv(Q_TMP, TMP, n);
+      //mat_inv(Q_TMP, TMP, n);
       copie_mat(TMP, Q_TMP, n);
       mat_prod(Q_TMP, Q, TMP, n, n, n);
       copie_mat(TMP, Q, n);
@@ -698,7 +713,7 @@ void schur(double **A, double **T, double**Q, int n, int m)
 
   copie_mat(A, T, n); // T a priori trigsup avec suffisamment de précision pour m assez grand 
 
-  mat_inv(Q, TMP, n);
+  //mat_inv(Q, TMP, n);
   copie_mat(TMP,Q, n);  // Q est la matrice de passage qui contient les vecteurs propres !
 
    
@@ -841,43 +856,43 @@ int main()
     }
 
   schur(C, T, Q, N-2, m);
-  aff_T(T, N-2);
-  vaps(V, T, N-2);
+  //aff_T(T, N-2);
+  //vaps(V, T, N-2);
 
   // On en déduit les vecteurs d'onde k possibles
 
-  double *k = (double*)malloc((N-2)*sizeof(double));
-  for (i=0; i<(N-2); i++)
-  {
-    k[i] = sqrt(-(V[i]));
-  }
-  tri_croissant(k, N-2);
-  aff_k(k, N-2);
+  //double *k = (double*)malloc((N-2)*sizeof(double));
+  //for (i=0; i<(N-2); i++)
+  //{
+  // k[i] = sqrt(-(V[i]));
+  //}
+  //tri_croissant(k, N-2);
+  //aff_k(k, N-2);
   // Pour chaque valeur propre k_i le vecteur propre associé est la i-eme colonne de la matrice Q de la décomposition de Schur
 
   // D'abord on calcul uniquement le vep associé au mode 3 pour avoir un beau plot, ensuite on fera un truc plus élégant
   
-  for (i=0; i<N-2; i++)
-    {
-      E[i] = Q[i][5];
-    }
+  //for (i=0; i<N-2; i++)
+  //{
+  //  E[i] = Q[i][5];
+  // }
 
-  fstream vep;
-  vep.open("vep.txt", ios::out);
-  for (i=0; i<N-2; i++)
-    {
-      vep << E[i] << endl;
-    }
-  vep.close();
+  //fstream vep;
+  //vep.open("vep.txt", ios::out);
+  //for (i=0; i<N-2; i++)
+  //{
+  //  vep << E[i] << endl;
+  //}
+  //vep.close();
 
 
-  fstream fgrille;
-  fgrille.open("grille.txt", ios::out); 
-  for(i=0; i<N; i++)
-  {
-   fgrille << grille[i] << endl; 
-  }
-  fgrille.close(); 
+  //fstream fgrille;
+  //fgrille.open("grille.txt", ios::out); 
+  //for(i=0; i<N; i++)
+  //{
+  //fgrille << grille[i] << endl; 
+  //}
+  //fgrille.close(); 
 
   // ********** Affichage des résultats - Comparaison avec les solutions analytiques **********
 
@@ -889,19 +904,19 @@ int main()
   
   // il faut créer un fichier contenant les données du problème pour que Python puisse s'y retrouver 
   
-  ostringstream pyth; 
-    pyth 
-    << "import numpy as np\n"
-    << "Z = np.linspace(0,10, 1000)\n"
-    << "Y = [np.sin((3*np.pi*z)/10) for z in Z]\n"
-    << "#E = loadtxt('vep.txt')\n"
-    << "G = loadtxt('grille.txt')\n"
-    << "#for i in range(len(E)): \n"
-    << " # plot(G[i], E[i], '+')\n"
-    << "plot(Z,Y)\n"
-    ; 
+  // ostringstream pyth; 
+      //pyth 
+      //<< "import numpy as np\n"
+      //<< "Z = np.linspace(0,10, 1000)\n"
+      //<< "Y = [np.sin((3*np.pi*z)/10) for z in Z]\n"
+      //<< "#E = loadtxt('vep.txt')\n"
+      //<< "G = loadtxt('grille.txt')\n"
+      //<< "#for i in range(len(E)): \n"
+      //<< " # plot(G[i], E[i], '+')\n"
+  //<< "plot(Z,Y)\n"
+  // ; 
 
-  make_plot_py(pyth);
+  //make_plot_py(pyth);
 
   
 
@@ -916,17 +931,17 @@ int main()
 
 
 
-  free(grille);
-  free(E);
-  free_(M, N-2); 
-  free_(D, N-2);
-  free_(L, N-2); 
-  free_(Lt, N-2);
-  free(V); 
-  free(k); 
-  free_(Q, N-2); 
-  free_(T, N-2); 
-  free_(C, N-2);
+  //free(grille);
+  //free(E);
+  //free_(M, N-2); 
+  //free_(D, N-2);
+  //free_(L, N-2); 
+  //free_(Lt, N-2);
+  //free(V); 
+  //free(k); 
+  //free_(Q, N-2); 
+  //free_(T, N-2); 
+  //free_(C, N-2);
 
   
   return 0;
